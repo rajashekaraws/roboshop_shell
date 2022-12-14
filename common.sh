@@ -1,4 +1,4 @@
-STAT() {
+STAT(){
   if [$1 -eq 0]; then
     echo SUCCESS
   else
@@ -7,6 +7,6 @@ STAT() {
   fi
 }
 
-PRINT() {
+PRINT(){
   echo -e "\e[33m$1\e[0m"
 }
