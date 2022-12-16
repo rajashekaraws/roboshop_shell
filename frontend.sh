@@ -1,8 +1,23 @@
+COMPONENT=frontend
+CONTENT="*"
+source common.sh
+
+PRINT "Install Nginx"
 yum install nginx -y
-curl -s -L -o /tmp/frontend.zip "https://github.com/roboshop-devops-project/frontend/archive/main.zip"
-cd /usr/share/nginx/html
-rm -rf *
-unzip /tmp/frontend.zip
+STAT $?
+APP_LOC=/usr/share/nginx/html
+
+DOWNLOAD_APP_CODE
+
 mv frontend-main/static/* .
+
+PRINT "Copy Roboshop Configuration File"
 mv frontend-main/localhost.conf /etc/nginx/default.d/roboshop.conf
-systemctl restart nginx
+
+PRINT "Enable Nginx Service"
+systemctl enable nginx &>>$LOG
+STAT $?
+
+PRINT "Start Nginx Service"
+systemctl restart nginx &>>$LOG
+STAT $?
