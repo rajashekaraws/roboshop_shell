@@ -2,7 +2,6 @@
 
 ##### Change these values ###
 ZONE_ID="Z09874851Y4H6OR4S1ZXF"
-# shellcheck disable=SC1068
 SG_NAME="allow-all"
 #ENV="dev"
 #############################
@@ -37,11 +36,8 @@ if [ -z "${SGID}" ]; then
   exit 1
 fi
 
-if [ -z "$1" ]; then
-  echo Input Component Name is needed
-  exit 1
-fi
 
-component=$1
-COMPONENT="${env}-${component}"
-create_ec2
+for component in catalogue cart user shipping payment frontend mongodb mysql rabbitmq redis dispatch; do
+  COMPONENT="${env}-${component}"
+  create_ec2
+done
