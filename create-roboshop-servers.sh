@@ -6,7 +6,7 @@ ZONE_ID="Z09874851Y4H6OR4S1ZXF"
 SG_NAME="allow all"
 #ENV="dev"
 #############################
-exit
+
 env=dev
 
 create_ec2() {
