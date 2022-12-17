@@ -23,7 +23,7 @@ DOWNLOAD_APP_CODE(){
 
   PRINT "Remove Previous Versions of App"
   cd $APP_LOC &>>$LOG
-  rm -rf ${COMPONENT} &>>$LOG
+  rm -rf ${CONTENT} &>>$LOG
   STAT $?
 
   PRINT "Extracting App Content"
