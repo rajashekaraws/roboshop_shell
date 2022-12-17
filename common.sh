@@ -17,6 +17,16 @@ LOG=/tmp/$COMPONENT.log
 rm -rf $LOG
 
 DOWNLOAD_APP_CODE(){
+  #this if condition: if app_user is not empty; then deal with that
+  if [ ! -z  "$APP_USER" ]; then
+      PRINT "Adding Application User"
+      id roboshop &>>$LOG
+      if [ $? -ne 0 ]; then
+        useradd roboshop &>>$LOG
+      fi
+      STAT $?
+  fi
+
   PRINT "Downloading App Content"
   curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/roboshop-devops-project/${COMPONENT}/archive/main.zip" &>>$LOG
   STAT $?
@@ -31,9 +41,21 @@ DOWNLOAD_APP_CODE(){
   STAT $?
 }
 
+SYSTEMD_SETUP() {
+  PRINT "Configure Endpoints for SystemD Configuration"
+  sed -i -e 's/MONGO_DNSNAME/dev-mongodb.devopsb69.online/' -e 's/REDIS_ENDPOINT/dev-redis.devopsb69.online/' -e 's/CATALOGUE_ENDPOINT/dev-catalogue.devopsb69.online/' -e 's/MONGO_ENDPOINT/dev-mongodb.devopsb69.online/' -e 's/CARTENDPOINT/dev-cart.devopsb69.online/' -e 's/DBHOST/dev-mysql.devopsb69.online/' -e 's/AMQPHOST/dev-rabbitmq.devopsb69.online/' -e 's/CARTHOST/dev-cart.devopsb69.online/' -e 's/USERHOST/dev-user.devopsb69.online/' /home/roboshop/${COMPONENT}/systemd.service &>>$LOG
+  mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service
+  STAT $?
+
+  PRINT "Restart ${COMPONENT}"
+  systemctl daemon-reload &>>$LOG && systemctl restart ${COMPONENT} &>>$LOG && systemctl enable ${COMPONENT} &>>$LOG
+  STAT $?
+}
+
 NODEJS(){
   APP_LOC=/home/roboshop
   CONTENT=$COMPONENT
+  APP_USER=roboshop
   PRINT "Install NodeJS Repos"
   curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>$LOG
   STAT $?
@@ -42,12 +64,7 @@ NODEJS(){
   yum install nodejs -y &>>$LOG
   STAT $?
 
-  PRINT "Adding Application User"
-  id roboshop &>>$LOG
-  if [ $? -ne 0 ]; then
-    useradd roboshop &>>$LOG
-  fi
-  STAT $?
+
 
   DOWNLOAD_APP_CODE
 
@@ -58,23 +75,26 @@ NODEJS(){
   npm install &>>$LOG
   STAT $?
 
-  PRINT "Configure Endpoints for systemD Configuration"
-  sed -i -e 's/REDIS_ENDPOINT/redis.rajashekar.online/' -e 's/CATALOGUE_ENDPOINT/catalogue.rajashekar.online/' /home/roboshop/${COMPONENT}/systemd.service &>>$LOG
+  SYSTEMD_SETUP
+
+JAVA() {
+  APP_LOC=/home/roboshop
+  CONTENT=$COMPONENT
+  APP_USER=roboshop
+
+  PRINT "Install Maven"
+  yum install maven -y  &>>$LOG
   STAT $?
 
-  PRINT "SetUp systemD service"
-  mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service &>>$LOG
+  DOWNLOAD_APP_CODE
+
+  mv ${COMPONENT}-main ${COMPONENT}
+  cd ${COMPONENT}
+
+  PRINT "Download Maven Dependencies"
+  mvn clean package &>>$LOG  && mv target/$COMPONENT-1.0.jar $COMPONENT.jar &>>$LOG
   STAT $?
 
-  PRINT "Reload systemd"
-  systemctl daemon-reload &>>$LOG
-  STAT $?
+  SYSTEMD_SETUP
 
-  PRINT "Restart Cart"
-  systemctl restart ${COMPONENT} &>>$LOG
-  STAT $?
-
-  PRINT "Enable Cart Service"
-  systemctl enable ${COMPONENT} &>>$LOG
-  STAT $?
 }
