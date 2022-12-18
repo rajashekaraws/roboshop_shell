@@ -132,36 +132,36 @@ PYTHON() {
 
 }
 
-GO() {
-  APP_LOC=/home/roboshop
-  CONTENT=$COMPONENT
-  APP_USER=roboshop
-
-  PRINT "Install GOlang"
-  yum install golang -y &>>$LOG
-  STAT $?
-
-  DOWNLOAD_APP_CODE
-
-  mv ${COMPONENT}-main ${COMPONENT}
-  cd ${COMPONENT}
-
-  PRINT "Building GO "
-  go mod init dispatch &>>$LOG
-  go get &>>$LOG
-  go build &>>$LOG
-  mv /home/roboshop/dispatch/systemd.service /etc/systemd/system/dispatch.service &>>$LOG
-  STAT $?
-
-  PRINT "Reload systemD"
-  systemctl daemon-reload &>>$LOG
-  STAT $?
-
-  PRINT "Enable ${COMPONENT} "
-  systemctl enable ${COMPONENT} &>>$LOG
-  STAT $?
-
-  PRINT "Restart ${COMPONENT} "
-  systemctl restart ${COMPONENT} &>>$LOG
-  STAT $?
-}
+#GO() {
+#  APP_LOC=/home/roboshop
+#  CONTENT=$COMPONENT
+#  APP_USER=roboshop
+#
+#  PRINT "Install GOlang"
+#  yum install golang -y &>>$LOG
+#  STAT $?
+#
+#  DOWNLOAD_APP_CODE
+#
+#  mv ${COMPONENT}-main ${COMPONENT}
+#  cd ${COMPONENT}
+#
+#  PRINT "Building GO "
+#  go mod init dispatch &>>$LOG
+#  go get &>>$LOG
+#  go build &>>$LOG
+#  mv /home/roboshop/dispatch/systemd.service /etc/systemd/system/dispatch.service &>>$LOG
+#  STAT $?
+#
+#  PRINT "Reload systemD"
+#  systemctl daemon-reload &>>$LOG
+#  STAT $?
+#
+#  PRINT "Enable ${COMPONENT} "
+#  systemctl enable ${COMPONENT} &>>$LOG
+#  STAT $?
+#
+#  PRINT "Restart ${COMPONENT} "
+#  systemctl restart ${COMPONENT} &>>$LOG
+#  STAT $?
+#}
