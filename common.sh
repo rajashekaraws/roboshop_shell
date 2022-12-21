@@ -42,7 +42,7 @@ DOWNLOAD_APP_CODE() {
 
 SYSTEMD_SETUP() {
   PRINT "Configure Endpoints for SystemD Configuration"
-  sed -i -e 's/REDIS_ENDPOINT/redis.devopsb69.online/' -e 's/CATALOGUE_ENDPOINT/catalogue.devopsb69.online/' /home/roboshop/${COMPONENT}/systemd.service &>>$LOG
+  sed -i -e 's/MONGO_DNSNAME/dev-mongodb.rajashekar.online/' -e 's/REDIS_ENDPOINT/dev-redis.rajashekar.online/' -e 's/CATALOGUE_ENDPOINT/dev-catalogue.rajashekar.online/' -e 's/MONGO_ENDPOINT/dev-mongodb.rajashekar.online/' -e 's/CARTENDPOINT/dev-cart.rajashekar.online/' -e 's/DBHOST/dev-mysql.rajashekar.online/' -e 's/AMQPHOST/dev-rabbitmq.rajashekar.online/' -e 's/CARTHOST/dev-cart.rajashekar.online/' -e 's/USERHOST/dev-user.rajashekar.online/' /home/roboshop/${COMPONENT}/systemd.service &>>$LOG
   mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service
   STAT $?
 
